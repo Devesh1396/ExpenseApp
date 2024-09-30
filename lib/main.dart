@@ -2,11 +2,14 @@ import 'package:expense_app/Onboard_Ui.dart';
 import 'package:expense_app/SignIn_Ui.dart';
 import 'package:expense_app/SplashUi.dart';
 import 'package:flutter/material.dart';
-
-import 'SignUp_Ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'bloc/blocmd.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(BlocProvider(
+    create: (context) => UserBloc(),
+    child: MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: SignUpUi(),
+      home: SplashUI(),
       debugShowCheckedModeBanner: false,
     );
   }

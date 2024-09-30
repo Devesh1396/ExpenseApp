@@ -100,6 +100,7 @@ class SignUpUi extends StatefulWidget {
 
             ElevatedButton(
               onPressed: (){
+                registerUser();
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
@@ -129,7 +130,7 @@ class SignUpUi extends StatefulWidget {
             BlocListener<UserBloc, UserState>(
               listener: (context, state) {
                 if (state is UserLoadingState) {
-                } else if (state is UserAddedState) {
+                } else if (state is UserSessionLoadedState) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Registration successful'),

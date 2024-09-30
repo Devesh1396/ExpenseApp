@@ -6,7 +6,7 @@ class UserInitialState extends UserState {}
 
 class UserLoadingState extends UserState {}
 
-class UserAddedState extends UserState {}
+//class UserAddedState extends UserState {}
 
 class UserFetchedState extends UserState {
   final User user;
@@ -26,3 +26,6 @@ class UserSessionLoadedState extends UserState {
 
   UserSessionLoadedState(this.user);
 }
+
+
+class OnboardingNotSeenState extends UserState {}

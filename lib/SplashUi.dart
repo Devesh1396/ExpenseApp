@@ -2,10 +2,13 @@ import 'dart:async';
 import 'package:expense_app/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Import BLoC
 import 'Onboard_Ui.dart';
 import 'SignIn_Ui.dart';
-
+import 'bloc/blocmd.dart';
+import 'bloc/events.dart';
+import 'bloc/states.dart';
+import 'HomeUI.dart';
 
 class SplashUI extends StatefulWidget {
   @override
@@ -34,29 +37,9 @@ class _SplashScreenState extends State<SplashUI> with SingleTickerProviderStateM
     // Add listener for animation completion
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _navigateAfterAnimation();
+        // Dispatch the CheckOnboardingEvent to check onboarding and session
+        context.read<UserBloc>().add(CheckOnboardingEvent());
       }
-    });
-  }
-
-  // Function to handle navigation after animation
-  Future<void> _navigateAfterAnimation() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
-
-    // Introduce a small delay before navigating
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-          hasSeenOnboarding ? SigninUi() : OnboardingUI(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(seconds: 1),
-        ),
-      );
     });
   }
 
@@ -70,40 +53,81 @@ class _SplashScreenState extends State<SplashUI> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            color: AppColors.secondaryColor.withOpacity(0.2),
-          ),
-          Center(
-            child: FadeTransition(
-              opacity: _animation,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    "assets/images/app_logo.svg",
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "SPENDMATE",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontFamily: 'customFont',
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                      letterSpacing: 2.0,
+      body: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is OnboardingNotSeenState) {
+            // Navigate to onboarding
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => OnboardingUI(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                transitionDuration: const Duration(seconds: 1),
+              ),
+            );
+          } else if (state is UserSessionLoadedState) {
+            // Navigate to home if the user session is loaded
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => HomeUI(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                transitionDuration: const Duration(seconds: 1),
+              ),
+            );
+          } else if (state is UserErrorState) {
+            // No session found, navigate to sign-in screen
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => SigninUi(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                transitionDuration: const Duration(seconds: 1),
+              ),
+            );
+          }
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              color: AppColors.secondaryColor.withOpacity(0.2),
+            ),
+            Center(
+              child: FadeTransition(
+                opacity: _animation,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      "assets/images/app_logo.svg",
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.contain,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    Text(
+                      "SPENDMATE",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontFamily: 'customFont',
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
+                        letterSpacing: 2.0,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

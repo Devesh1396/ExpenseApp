@@ -10,9 +10,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final DatabaseHelper databaseHelper = DatabaseHelper();
 
   UserBloc() : super(UserInitialState()) {
+    on<CheckOnboardingEvent>(_onCheckOnboarding);
     on<AddUserEvent>(_onAddUser);
     on<FetchUserEvent>(_onFetchUser);
-    on<SaveUserSessionEvent>(_onSaveUserSession);
+    //on<SaveUserSessionEvent>(_onSaveUserSession);
     on<LoadUserSessionEvent>(_onLoadUserSession);
   }
 
@@ -41,7 +42,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       int userId = await databaseHelper.insertUser(newUser);
 
       if (userId > 0) {
-        emit(UserAddedState()); // Emit success state
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userEmail', newUser.email);
+        emit(UserSessionLoadedState(newUser));
+        // Emit success state
       } else {
         emit(UserErrorState('Failed to add user'));
       }
@@ -64,7 +68,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         if (isPasswordCorrect) {
           emit(UserFetchedState(user)); // Emit success state with user data
-          add(SaveUserSessionEvent(email: event.email));
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('userEmail', event.email);
         } else {
           emit(UserErrorState('Incorrect password'));
         }
@@ -76,11 +81,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  // Handler for saving user session (email)
+  /*// Handler for saving user session (email)
   Future<void> _onSaveUserSession(SaveUserSessionEvent event, Emitter<UserState> emit) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('userEmail', event.email);
-  }
+  }*/
 
   // Handler for loading user session
   Future<void> _onLoadUserSession(LoadUserSessionEvent event, Emitter<UserState> emit) async {
@@ -96,6 +101,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     } else {
       emit(UserErrorState('No session found'));
+    }
+  }
+
+  Future<void> _onCheckOnboarding(CheckOnboardingEvent event, Emitter<UserState> emit) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+
+    if (!hasSeenOnboarding) {
+      emit(OnboardingNotSeenState()); // Navigate to onboarding if not seen
+    } else {
+      // If onboarding has been seen, check for user session
+      add(LoadUserSessionEvent());
     }
   }
 

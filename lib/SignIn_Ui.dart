@@ -139,6 +139,7 @@ class SigninUi extends StatefulWidget {
 
               ElevatedButton(
                 onPressed: (){
+                  loginUser();
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
