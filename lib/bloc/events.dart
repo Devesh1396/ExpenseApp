@@ -15,3 +15,12 @@ class FetchUserEvent extends UserEvent {
   FetchUserEvent({required this.email, required this.password});
 }
 
+class SaveUserSessionEvent extends UserEvent {
+  final String email;
+
+  SaveUserSessionEvent({required this.email});
+}
+
+// Event to Load User Session
+class LoadUserSessionEvent extends UserEvent {}
+

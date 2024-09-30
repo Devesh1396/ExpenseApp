@@ -23,12 +23,12 @@ class _OnboardingUIState extends State<OnboardingUI> {
     {
       'title': 'Take Control of Your Finances',
       'description': 'Track, Manage, and Analyze Your Expenses with Ease and like a Pro',
-      'image': 'assets/images/onboard1.svg',
+      'image': 'assets/images/onboard2.svg',
     },
     {
       'title': 'Your Data is Secure',
       'description': 'Peace of Mind with Secure Data Protection, We Prioritize Your Privacy',
-      'image': 'assets/images/onboard1.svg',
+      'image': 'assets/images/onboard3.svg',
     },
   ];
 

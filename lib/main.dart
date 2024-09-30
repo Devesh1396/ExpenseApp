@@ -1,6 +1,9 @@
 import 'package:expense_app/Onboard_Ui.dart';
+import 'package:expense_app/SignIn_Ui.dart';
 import 'package:expense_app/SplashUi.dart';
 import 'package:flutter/material.dart';
+
+import 'SignUp_Ui.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: SplashUI(),
+      home: SignUpUi(),
       debugShowCheckedModeBanner: false,
     );
   }

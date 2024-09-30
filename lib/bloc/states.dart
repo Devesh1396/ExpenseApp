@@ -19,3 +19,10 @@ class UserErrorState extends UserState {
 
   UserErrorState(this.message);
 }
+
+//  tate to Indicate User Session Loaded
+class UserSessionLoadedState extends UserState {
+  final User user;
+
+  UserSessionLoadedState(this.user);
+}

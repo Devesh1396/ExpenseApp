@@ -1,10 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'HomeUI.dart';
 import 'SignUp_Ui.dart';
 import 'app_colors.dart';
+import 'bloc/blocmd.dart';
+import 'bloc/events.dart';
+import 'bloc/states.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
-class SigninUi extends StatelessWidget {
+class SigninUi extends StatefulWidget {
+  @override
+  _SignInState createState() => _SignInState();
+}
+
+  class _SignInState extends State<SigninUi> {
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void loginUser() {
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    // Dispatch FetchUserEvent to the UserBloc
+    context.read<UserBloc>().add(
+      FetchUserEvent(email: email, password: password),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -12,25 +36,8 @@ class SigninUi extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          _background(),
           _loginform(context),
         ],
-      ),
-    );
-  }
-
-  Widget _background(){
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primaryColor,
-            Colors.white,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          //stops: [0.1, 1],
-        ),
       ),
     );
   }
@@ -38,20 +45,10 @@ class SigninUi extends StatelessWidget {
   Widget _loginform(BuildContext context){
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Container(
-          padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 15.0,
-                spreadRadius: 5.0,
-                offset: Offset(0,5),
-              ),
-            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,33 +57,41 @@ class SigninUi extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                    SvgPicture.asset(
-                      "assets/images/Logo.svg",
-                      width: 100,
-                      height: 100,
+                    Text(
+                      "SPENDMATE",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontFamily: 'customFont',
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
+                        letterSpacing: 2.0,
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Tamaru Swagat Che",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        SvgPicture.asset(
-                          "assets/images/folded_hands.svg",
-                          width: 30,
-                          height: 30,
-                        ),
-                      ],
+                    SizedBox(height: 5),
+                    Text(
+                      "Expense Tracking Made Easy",
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.8),
+                        fontSize: 18,
+                        fontFamily: 'customFont',
+                      ),
                     ),
                   ],
                 ),
               ),
+              SizedBox(height: 40),
+              Center(
+                child: Text(
+                  "Sign In",
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.9),
+                    fontSize: 18,
+                    fontFamily: 'customFont',
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+
               SizedBox(height: 20),
               Text(
                 "Email Address",
@@ -96,60 +101,42 @@ class SigninUi extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 5),
-              TextField(
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(
-                        color: Colors.grey,
-                        width: 2,
-                      )
-                  ),
-                  hintText: "Enter Your Email ID",
-                ),
-              ),
+              _customTextField(
+                controller: emailController,
+                hintText: 'Enter Your Email ID',
+                prefix_icon: Icons.email_outlined,
+              ), // Optional suffix icon
               SizedBox(height: 16.0),
-              Text(
-                "Password",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 5),
-              TextField(
+              _customTextField(
+                controller: passwordController,
+                hintText: 'Enter Your Password',
+                prefix_icon: Icons.lock_outline,
+                suffix_icon: Icons.visibility_off_outlined,
                 obscureText: true,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.lock_outline),
-                  suffixIcon: Icon(Icons.visibility_off_outlined),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                      borderSide: BorderSide(
-                        color: Colors.grey,
-                        width: 2,
-                      )
-                  ),
-                  hintText: "Enter Your Password",
-                ),
               ),
               SizedBox(height: 8),
-              TextButton(
-                onPressed: () {
-                },
-                child: Center(
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                  },
                   child: Text(
                     "Forgot Password?",
                     style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.black.withOpacity(0.7),
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.underline,
                     ),
                   ),
+                  style: ButtonStyle(
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
+
               ElevatedButton(
                 onPressed: (){
                 },
@@ -164,18 +151,17 @@ class SigninUi extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Login to Continue",
+                      "Sign in to Continue",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontFamily: 'customFont',
                       ),
                     ),
-                    SizedBox(width: 8.0),
-                    Icon(Icons.login, color: Colors.white),
                   ],
                 ),
               ),
+
               SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -184,7 +170,7 @@ class SigninUi extends StatelessWidget {
                     "Don't have an account?",
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 17,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -195,25 +181,93 @@ class SigninUi extends StatelessWidget {
                     );
                   },
                     child: Text(
-                      "Register Now",
+                      "Sign Up",
                       style: TextStyle(
                         color: AppColors.primaryColor,
-                        fontSize: 17,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
+                    ),
+                    style: ButtonStyle(
+                      overlayColor: WidgetStateProperty.all(Colors.transparent),
                     ),
                   ),
                 ],
               ),
+
               SizedBox(height: 1),
               _dividerText(),
               _socialIcon(context),
+
+              // BlocListener to handle login states
+              BlocListener<UserBloc, UserState>(
+                listener: (context, state) {
+                  if (state is UserLoadingState) {
+                    // Optionally show a loading indicator
+                  } else if (state is UserFetchedState) {
+                    // Login successful
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Login successful!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeUI()),
+                    );
+                  } else if (state is UserErrorState) {
+                    // Show error message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                child: Container(), // Placeholder widget
+              ),
+
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _customTextField({
+    required TextEditingController controller,
+    required String hintText,
+    bool obscureText = false,
+    IconData? prefix_icon,
+    IconData? suffix_icon,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        prefixIcon: Icon(prefix_icon),
+        suffixIcon: Icon(suffix_icon),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20.0),
+          borderSide: BorderSide(
+            color: Colors.grey.withOpacity(0.4),
+            width: 2,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20.0),
+          borderSide: BorderSide(
+            color: Colors.black.withOpacity(0.5),
+            width: 2,
+          ),
+        ),
+        hintText: hintText,
+      ),
+    );
+  }
+
 
   Widget _dividerText(){
     return Padding(
@@ -229,7 +283,7 @@ class SigninUi extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
-                "or",
+                "or sign in with",
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
@@ -249,51 +303,36 @@ class SigninUi extends StatelessWidget {
 
   Widget _socialIcon(BuildContext context){
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _SocialIconCont("assets/images/google.svg","Continue with Google", context),
+        _socialIconCont("assets/images/google.svg", context),
+        _socialIconCont("assets/images/facebook.svg", context),
+        _socialIconCont("assets/images/apple.svg", context),
       ],
     );
   }
 
-  Widget _SocialIconCont(String URL, String text, BuildContext context){
+  Widget _socialIconCont(String URL, BuildContext context) {
     return ElevatedButton(
-      onPressed: (){
+      onPressed: () {
+        // Add your onPressed logic here
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
+        shape: CircleBorder(), // Make the button circular
         side: BorderSide(
           color: Colors.grey,
           width: 1,
         ),
+        padding: EdgeInsets.all(16.0), // Adjust padding for icon inside
       ),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Stack(
-          children: [
-            SvgPicture.asset(
-              URL,
-              width: 24,
-              height: 24,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 40.0),
-              child: Text(
-                  text,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  )
-              ),
-            ),
-          ],
-        ),
+      child: SvgPicture.asset(
+        URL,
+        width: 24,
+        height: 24,
       ),
     );
   }
+
 
 }
